@@ -1,15 +1,10 @@
 "use client";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { useState, useEffect } from "react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -23,7 +18,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ja">
       <body
-        className={`${isClient ? `${geistSans.variable} ${geistMono.variable} antialiased` : ""}`}
+        className={`${isClient ? `${inter.variable} antialiased` : ""}`}
         suppressHydrationWarning
       >
         {children}
@@ -31,6 +26,7 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
 
 
 
