@@ -51,6 +51,8 @@ jobs:
           if [ -f "./.next/routes-manifest.json" ]; then cp ./.next/routes-manifest.json ./deploy/.next/; fi
           # prerender-manifest.json があれば deploy/.next にコピー
           if [ -f "./.next/prerender-manifest.json" ]; then cp ./.next/prerender-manifest.json ./deploy/.next/; fi
+          # さらに、.next/server があれば deploy/.next/server にコピー
+          if [ -d "./.next/server" ]; then cp -r ./.next/server ./deploy/.next/; fi
           ls -R ./deploy  # ※ デバッグ用：deploy フォルダ内のファイル一覧を表示
 
       # 5) deploy フォルダを ZIP 化
