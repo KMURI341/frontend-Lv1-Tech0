@@ -45,6 +45,7 @@ jobs:
           # .next/static があれば deploy/.next/static にコピー
           mkdir -p ./deploy/.next
           if [ -d "./.next/static" ]; then cp -r ./.next/static ./deploy/.next/static; fi
+          ls -R ./deploy  # 追加：deployフォルダ内のファイル一覧を表示
 
       # 5) deploy フォルダを ZIP 化
       - name: Zip artifact for deployment
