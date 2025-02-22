@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # This is required for actions/checkout
 
     steps:
       # 1) ソースコードをチェックアウト
@@ -32,9 +32,11 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
-      # 4) ビルド成果物を deploy フォルダにまとめる  ←★追加★
+      # 4) ビルド成果物を deploy フォルダにまとめる
       - name: Copy artifact for deployment job
         run: |
+          # 既に deploy フォルダがある場合は削除 (エラー回避)
+          rm -rf deploy
           mkdir deploy
           # .next/standalone の中身を deploy/ 直下へコピー
           cp -r ./.next/standalone/* ./deploy
@@ -44,7 +46,7 @@ jobs:
           mkdir -p ./deploy/.next
           if [ -d "./.next/static" ]; then cp -r ./.next/static ./deploy/.next/static; fi
 
-      # 5) deploy フォルダを ZIP 化  ←★修正★
+      # 5) deploy フォルダを ZIP 化
       - name: Zip artifact for deployment
         run: zip release.zip ./deploy -r
 
@@ -80,6 +82,7 @@ jobs:
         with:
           app-name: 'tech0-gen8-step4-pos-app-113'
           slot-name: 'Production'
-          # package を . から ./deploy に変更  ←★修正★
+          # package を . から ./deploy に変更
           package: ./deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_39476555C0454AF8943766C12B9C78A5 }}
+
