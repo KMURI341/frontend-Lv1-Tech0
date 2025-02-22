@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '20.x'
 
-      # 3) npm install, build, and test
+      # 3) npm install & build & test
       - name: npm install, build, and test
         run: |
           npm install
@@ -38,22 +38,46 @@ jobs:
           # 既に deploy フォルダがある場合は削除 (エラー回避)
           rm -rf deploy
           mkdir deploy
-          # .next/standalone の中身を deploy/ 直下へコピー
+
+          # 4-1) .next/standalone の中身を deploy/ 直下へコピー (server.jsなど)
           cp -r ./.next/standalone/* ./deploy
-          # public フォルダがあればコピー
-          if [ -d "./public" ]; then cp -r ./public ./deploy; fi
-          # .next/static があれば deploy/.next/static にコピー
+
+          # 4-2) public フォルダ (あれば)
+          if [ -d "./public" ]; then
+            cp -r ./public ./deploy
+          fi
+
+          # 4-3) .next ディレクトリ下の必要ファイルを deploy/.next にまとめる
           mkdir -p ./deploy/.next
-          if [ -d "./.next/static" ]; then cp -r ./.next/static ./deploy/.next/static; fi
-          # BUILD_ID があれば deploy/.next にコピー
-          if [ -f "./.next/BUILD_ID" ]; then cp ./.next/BUILD_ID ./deploy/.next/; fi
-          # routes-manifest.json があれば deploy/.next にコピー
-          if [ -f "./.next/routes-manifest.json" ]; then cp ./.next/routes-manifest.json ./deploy/.next/; fi
-          # prerender-manifest.json があれば deploy/.next にコピー
-          if [ -f "./.next/prerender-manifest.json" ]; then cp ./.next/prerender-manifest.json ./deploy/.next/; fi
-          # さらに、.next/server があれば deploy/.next/server にコピー
-          if [ -d "./.next/server" ]; then cp -r ./.next/server ./deploy/.next/; fi
-          ls -R ./deploy  # ※ デバッグ用：deploy フォルダ内のファイル一覧を表示
+
+          # 4-3a) .next/static
+          if [ -d "./.next/static" ]; then
+            cp -r ./.next/static ./deploy/.next/static
+          fi
+
+          # 4-3b) BUILD_ID
+          if [ -f "./.next/BUILD_ID" ]; then
+            cp ./.next/BUILD_ID ./deploy/.next/
+          fi
+
+          # 4-3c) routes-manifest.json
+          if [ -f "./.next/routes-manifest.json" ]; then
+            cp ./.next/routes-manifest.json ./deploy/.next/
+          fi
+
+          # 4-3d) prerender-manifest.json
+          if [ -f "./.next/prerender-manifest.json" ]; then
+            cp ./.next/prerender-manifest.json ./deploy/.next/
+          fi
+
+          # 4-3e) server ディレクトリ (pages-manifest.json等を含む)
+          if [ -d "./.next/server" ]; then
+            mkdir -p ./deploy/.next/server
+            cp -r ./.next/server/* ./deploy/.next/server
+          fi
+
+          # ※ デバッグ用：deploy フォルダ内のファイル一覧を表示
+          ls -R ./deploy
 
       # 5) deploy フォルダを ZIP 化
       - name: Zip artifact for deployment
@@ -91,6 +115,5 @@ jobs:
         with:
           app-name: 'tech0-gen8-step4-pos-app-113'
           slot-name: 'Production'
-          # package を . から ./deploy に変更
-          package: ./deploy
+          package: ./deploy  # . から ./deploy に変更
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_39476555C0454AF8943766C12B9C78A5 }}
