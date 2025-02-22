@@ -45,8 +45,10 @@ jobs:
           # .next/static があれば deploy/.next/static にコピー
           mkdir -p ./deploy/.next
           if [ -d "./.next/static" ]; then cp -r ./.next/static ./deploy/.next/static; fi
-          # さらに、BUILD_ID があれば deploy/.next にコピー
+          # BUILD_ID があれば deploy/.next にコピー
           if [ -f "./.next/BUILD_ID" ]; then cp ./.next/BUILD_ID ./deploy/.next/; fi
+          # routes-manifest.json があれば deploy/.next にコピー
+          if [ -f "./.next/routes-manifest.json" ]; then cp ./.next/routes-manifest.json ./deploy/.next/; fi
           ls -R ./deploy  # ※ デバッグ用：deploy フォルダ内のファイル一覧を表示
 
       # 5) deploy フォルダを ZIP 化
@@ -88,4 +90,3 @@ jobs:
           # package を . から ./deploy に変更
           package: ./deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_39476555C0454AF8943766C12B9C78A5 }}
-
