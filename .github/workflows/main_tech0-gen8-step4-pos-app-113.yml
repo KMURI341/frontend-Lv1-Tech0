@@ -38,9 +38,28 @@ jobs:
           # 既に deploy フォルダがある場合は削除 (エラー回避)
           rm -rf deploy
           mkdir deploy
-          cp -r ./.next/standalone/. ./deploy
-          cp -r ./public ./deploy
-          cp -r ./.next/static/. ./deploy/.next/static
+        
+            # 2) .next/standalone の中身を deploy/ にコピー（server.js など）
+            cp -r ./.next/standalone/* ./deploy
+        
+            # 3) .next ディレクトリの一部ファイルを deploy/.next にまとめる
+            mkdir -p ./deploy/.next
+        
+            # 3a) .next/static のコピー
+            if [ -d "./.next/static" ]; then
+              mkdir -p ./deploy/.next
+              cp -r ./.next/static ./deploy/.next/static
+            fi
+        
+            # 4) public ディレクトリがあればコピー
+            if [ -d "./public" ]; then
+              cp -r ./public ./deploy
+            fi
+        
+        
+            # デバッグ用: deploy フォルダの構造を出力
+            ls -R ./deploy
+        
 
           # ※ デバッグ用：deploy フォルダ内のファイル一覧を表示
           ls -R ./deploy
