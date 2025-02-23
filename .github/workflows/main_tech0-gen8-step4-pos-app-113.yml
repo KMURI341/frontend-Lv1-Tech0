@@ -35,31 +35,46 @@ jobs:
       # 4) ビルド成果物を deploy フォルダにまとめる
       - name: Copy artifact for deployment job
         run: |
-          # 既に deploy フォルダがある場合は削除 (エラー回避)
+          # 既に deploy フォルダがある場合は削除（エラー回避）
           rm -rf deploy
           mkdir deploy
-        
-            # 2) .next/standalone の中身を deploy/ にコピー（server.js など）
-            cp -r ./.next/standalone/* ./deploy
-        
-            # 3) .next ディレクトリの一部ファイルを deploy/.next にまとめる
-            mkdir -p ./deploy/.next
-        
-            # 3a) .next/static のコピー
-            if [ -d "./.next/static" ]; then
-              mkdir -p ./deploy/.next
-              cp -r ./.next/static ./deploy/.next/static
-            fi
-        
-            # 4) public ディレクトリがあればコピー
-            if [ -d "./public" ]; then
-              cp -r ./public ./deploy
-            fi
-        
-        
-            # デバッグ用: deploy フォルダの構造を出力
-            ls -R ./deploy
-        
+
+          # 4-1) .next/standalone の中身を deploy/ にコピー（server.js など）
+          cp -r ./.next/standalone/* ./deploy
+
+          # 4-2) deploy/.next フォルダを作成
+          mkdir -p ./deploy/.next
+
+          # 4-3a) .next/static のコピー（存在すれば）
+          if [ -d "./.next/static" ]; then
+            cp -r ./.next/static ./deploy/.next/static
+          fi
+
+          # 4-3b) BUILD_ID のコピー（存在すれば）
+          if [ -f "./.next/BUILD_ID" ]; then
+            cp ./.next/BUILD_ID ./deploy/.next/
+          fi
+
+          # 4-3c) routes-manifest.json のコピー（存在すれば）
+          if [ -f "./.next/routes-manifest.json" ]; then
+            cp ./.next/routes-manifest.json ./deploy/.next/
+          fi
+
+          # 4-3d) prerender-manifest.json のコピー（存在すれば）
+          if [ -f "./.next/prerender-manifest.json" ]; then
+            cp ./.next/prerender-manifest.json ./deploy/.next/
+          fi
+
+          # 4-3e) server ディレクトリ（通常モード用：pages-manifest.json等を含む）のコピー（存在すれば）
+          if [ -d "./.next/server" ]; then
+            mkdir -p ./deploy/.next/server
+            cp -r ./.next/server/* ./deploy/.next/server
+          fi
+
+          # 4-4) public ディレクトリがあればコピー
+          if [ -d "./public" ]; then
+            cp -r ./public ./deploy
+          fi
 
           # ※ デバッグ用：deploy フォルダ内のファイル一覧を表示
           ls -R ./deploy
@@ -100,5 +115,6 @@ jobs:
         with:
           app-name: 'tech0-gen8-step4-pos-app-113'
           slot-name: 'Production'
-          package: ./deploy  # . から ./deploy に変更
+          package: ./deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_39476555C0454AF8943766C12B9C78A5 }}
+
