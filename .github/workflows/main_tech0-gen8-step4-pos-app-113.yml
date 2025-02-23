@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - tech0-gen8-step4-pos-app-113
 
 on:
@@ -13,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # This is required for actions/checkout
+      contents: read
 
     steps:
       # 1) ソースコードをチェックアウト
@@ -25,8 +22,10 @@ jobs:
         with:
           node-version: '20.x'
 
-      # 3) npm install & build & test
+      # 3) npm install & build & test (ここで環境変数を指定)
       - name: npm install, build, and test
+        env:
+          NEXT_PUBLIC_API_URL: "https://tech0-gen8-step4-pos-app-114.azurewebsites.net"
         run: |
           npm install
           npm run build --if-present
@@ -39,48 +38,36 @@ jobs:
       # 4) ビルド成果物を deploy フォルダにまとめる
       - name: Copy artifact for deployment job
         run: |
-          # 既に deploy フォルダがある場合は削除（エラー回避）
           rm -rf deploy
           mkdir deploy
-
-          # 4-1) .next/standalone の中身を deploy/ にコピー（server.js など）
           cp -r ./.next/standalone/* ./deploy
-
-          # 4-2) deploy/.next フォルダを作成
           mkdir -p ./deploy/.next
 
-          # 4-3a) .next/static のコピー（存在すれば）
           if [ -d "./.next/static" ]; then
             cp -r ./.next/static ./deploy/.next/static
           fi
 
-          # 4-3b) BUILD_ID のコピー（存在すれば）
           if [ -f "./.next/BUILD_ID" ]; then
             cp ./.next/BUILD_ID ./deploy/.next/
           fi
 
-          # 4-3c) routes-manifest.json のコピー（存在すれば）
           if [ -f "./.next/routes-manifest.json" ]; then
             cp ./.next/routes-manifest.json ./deploy/.next/
           fi
 
-          # 4-3d) prerender-manifest.json のコピー（存在すれば）
           if [ -f "./.next/prerender-manifest.json" ]; then
             cp ./.next/prerender-manifest.json ./deploy/.next/
           fi
 
-          # 4-3e) server ディレクトリ（通常モード用：pages-manifest.json等を含む）のコピー（存在すれば）
           if [ -d "./.next/server" ]; then
             mkdir -p ./deploy/.next/server
             cp -r ./.next/server/* ./deploy/.next/server
           fi
 
-          # 4-4) public ディレクトリがあればコピー
           if [ -d "./public" ]; then
             cp -r ./public ./deploy
           fi
 
-          # ※ デバッグ用：deploy フォルダ内のファイル一覧を表示
           ls -R ./deploy
 
       # 5) deploy フォルダを ZIP 化
@@ -121,4 +108,3 @@ jobs:
           slot-name: 'Production'
           package: ./deploy
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_39476555C0454AF8943766C12B9C78A5 }}
-
