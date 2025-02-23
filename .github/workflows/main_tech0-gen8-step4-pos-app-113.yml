@@ -38,43 +38,9 @@ jobs:
           # 既に deploy フォルダがある場合は削除 (エラー回避)
           rm -rf deploy
           mkdir deploy
-
-          # 4-1) .next/standalone の中身を deploy/ 直下へコピー (server.jsなど)
-          cp -r ./.next/standalone/* ./deploy
-
-          # 4-2) public フォルダ (あれば)
-          if [ -d "./public" ]; then
-            cp -r ./public ./deploy
-          fi
-
-          # 4-3) .next ディレクトリ下の必要ファイルを deploy/.next にまとめる
-          mkdir -p ./deploy/.next
-
-          # 4-3a) .next/static
-          if [ -d "./.next/static" ]; then
-            cp -r ./.next/static ./deploy/.next/static
-          fi
-
-          # 4-3b) BUILD_ID
-          if [ -f "./.next/BUILD_ID" ]; then
-            cp ./.next/BUILD_ID ./deploy/.next/
-          fi
-
-          # 4-3c) routes-manifest.json
-          if [ -f "./.next/routes-manifest.json" ]; then
-            cp ./.next/routes-manifest.json ./deploy/.next/
-          fi
-
-          # 4-3d) prerender-manifest.json
-          if [ -f "./.next/prerender-manifest.json" ]; then
-            cp ./.next/prerender-manifest.json ./deploy/.next/
-          fi
-
-          # 4-3e) server ディレクトリ (pages-manifest.json等を含む)
-          if [ -d "./.next/server" ]; then
-            mkdir -p ./deploy/.next/server
-            cp -r ./.next/server/* ./deploy/.next/server
-          fi
+          cp -r ./.next/standalone/. ./deploy
+          cp -r ./public ./deploy
+          cp -r ./.next/static/. ./deploy/.next/static
 
           # ※ デバッグ用：deploy フォルダ内のファイル一覧を表示
           ls -R ./deploy
