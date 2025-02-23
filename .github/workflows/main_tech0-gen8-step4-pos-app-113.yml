@@ -31,7 +31,11 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
-
+      
+      # 3.1) ./.next ディレクトリの構造を表示して確認
+      - name: List ./.next directory structure
+        run: ls -R ./.next
+      
       # 4) ビルド成果物を deploy フォルダにまとめる
       - name: Copy artifact for deployment job
         run: |
